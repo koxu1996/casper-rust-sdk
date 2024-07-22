@@ -37,7 +37,7 @@ impl EventInfo {
     pub fn event_type(&self) -> EventType {
         match self {
             EventInfo::ApiVersion(_) => EventType::ApiVersion,
-            EventInfo::SidecarVersion(_) => EventType::Other,
+            EventInfo::SidecarVersion(_) => EventType::Shutdown,
             EventInfo::BlockAdded(_) => EventType::BlockAdded,
             EventInfo::TransactionAccepted(_) => EventType::TransactionAccepted,
             EventInfo::TransactionProcessed(_) => EventType::TransactionProcessed,

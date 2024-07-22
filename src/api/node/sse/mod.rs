@@ -1,4 +1,5 @@
 pub mod client;
+pub mod client_core;
 pub mod error;
 pub mod types;
 pub use client::Client;
