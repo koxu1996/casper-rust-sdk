@@ -144,20 +144,28 @@ impl Client {
 /// Handles incoming commands and delegates tasks to ClientCore.
 async fn run_client_core(mut rx: mpsc::Receiver<CoreCommand>, mut client_core: ClientCore) {
     loop {
-        tokio::select! {
-            Some(event) = client_core.run_once() => {
-                println!("event: {:?}", event);
-                client_core.handle_event(&event).unwrap();
-            },
-            Some(command) = rx.recv() => {
-                    let _ = handle_command(command, &mut client_core)
+        if client_core.is_connected == false {
+          if let Some(command) = rx.recv().await {
+            let _ = handle_command(command, &mut client_core)
                         .await
                         .unwrap();
-                        // .map_err(|e| match e {
-                        //     L1SyncError::UnexpectedError(e) => panic!("Unrecoverable error: {}", e),
-                        //     _ => tracing::error!("Transient error: {}", e),
-                        // });
-            },
+          }  
+        } else {
+            tokio::select! {
+                Some(event) = client_core.run_once() => {
+                    println!("event: {:?}", event);
+                    client_core.handle_event(&event).unwrap();
+                },
+                Some(command) = rx.recv() => {
+                        let _ = handle_command(command, &mut client_core)
+                            .await
+                            .unwrap();
+                            // .map_err(|e| match e {
+                            //     L1SyncError::UnexpectedError(e) => panic!("Unrecoverable error: {}", e),
+                            //     _ => tracing::error!("Transient error: {}", e),
+                            // });
+                },
+            }
         }
     }
 }

@@ -13,6 +13,7 @@ pub struct ClientCore {
     event_handlers: HashMap<EventType, HashMap<u64, Box<dyn Fn() + Send>>>,
     id_types: HashMap<u64, EventType>,
     next_event_id: u64,
+    pub is_connected: bool,
 }
 
 
@@ -24,6 +25,7 @@ impl ClientCore {
             event_handlers: HashMap::new(),
             id_types: HashMap::new(),
             next_event_id: 0,
+            is_connected: false,
         }
     }
 
@@ -50,6 +52,7 @@ impl ClientCore {
         let boxed_event_stream = Box::pin(event_stream);
 
         self.event_stream = Some(boxed_event_stream);
+        self.is_connected = true;
         Ok(())
     }
 
@@ -74,7 +77,7 @@ impl ClientCore {
                 y
             },
             None => {
-                println!("No stream...");
+                println!("No stream (not connected)...");
                 None
             },
         }
